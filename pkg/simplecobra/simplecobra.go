@@ -58,6 +58,7 @@ func New(rootCmd Commander) (*Exec, error) {
 	rootCd := &Commandeer{
 		Command: rootCmd,
 	}
+	rootCd.Root = rootCd
 
 	// 递归添加所有的命令,将统一级别的子命令放在同层后递归添加
 	var addCommands func(cd *Commandeer, cmd Commander)

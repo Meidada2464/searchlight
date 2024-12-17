@@ -18,7 +18,9 @@ var errHelp = errors.New("help requested")
 // Register other subcommands
 func newExec() (*simplecobra.Exec, error) {
 	rootCmd := &rootCommand{
-		commands: []simplecobra.Commander{},
+		commands: []simplecobra.Commander{
+			newGoPingCommand(),
+		},
 	}
 
 	return simplecobra.New(rootCmd)

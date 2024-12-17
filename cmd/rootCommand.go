@@ -38,7 +38,7 @@ func (r *rootCommand) Run(ctx context.Context, cd *simplecobra.Commandeer, args 
 }
 
 func (r *rootCommand) Commands() []simplecobra.Commander {
-	return nil
+	return r.commands
 }
 
 // 初始化子任务等命令
@@ -54,7 +54,5 @@ func (r *rootCommand) initRootCommand(subCommandName string, cd *simplecobra.Com
 	cmd.Long = "searchlight is a cli tool is used to solve daily network problems!"
 
 	// in their can config persistent flags and local flags
-	cmd.PersistentFlags().StringVarP(&r.source, "source", "s", "", "The source of searchlight")
-	_ = cmd.MarkFlagDirname("source")
 	return nil
 }
