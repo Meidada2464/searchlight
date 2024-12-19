@@ -20,6 +20,7 @@ func newExec() (*simplecobra.Exec, error) {
 	rootCmd := &rootCommand{
 		commands: []simplecobra.Commander{
 			newGoPingCommand(),
+			newCmdPingCommand(),
 		},
 	}
 

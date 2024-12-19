@@ -22,8 +22,11 @@ func GPService(srcIp, tarIp string, count, size, interVal, timeOut int) error {
 	p.Interval = time.Duration(interVal) * time.Second
 	p.Timeout = time.Duration(timeOut) * time.Second
 	// 当能获取到对应的网卡ip时，通过IP指定出口网卡
-	sIp, err := nic.GetSameAvailableIp(srcIp)
-	if err == nil && sIp != "" {
+	sIp, err := nic.GetSameAvailableIp(srcIp, nic.GetIpType(tarIp))
+	if err != nil {
+		return err
+	}
+	if sIp != "" {
 		p.Source = sIp
 	}
 
