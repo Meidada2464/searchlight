@@ -8,8 +8,8 @@ package nic
 
 import (
 	"errors"
-	"math"
 	"net"
+	"searchlight/pkg/util"
 )
 
 func IsIpLegal(ip string) bool {
@@ -21,7 +21,7 @@ func IsIpLegal(ip string) bool {
 }
 
 // GetSameAvailableIp obtain the ip address of the same type
-func GetSameAvailableIp(ip string) (string, error) {
+func GetSameAvailableIp(ip, tarIpType string) (string, error) {
 	var (
 		ipType   string
 		ipv4List []string
@@ -47,11 +47,11 @@ func GetSameAvailableIp(ip string) (string, error) {
 		if len(ipv4s) == 0 {
 			break
 		}
-		pointer := math.Round(float64(len(ipv4s)) - 1)
+		pointer := util.Rand(len(ipv4s))
 		for key, _ := range ipv4s {
 			ipv4List = append(ipv4List, key)
 		}
-		return ipv4List[int(pointer)], nil
+		return ipv4List[pointer], nil
 	case "ipv6":
 		if ok := ipv6s[ip]; ok != "" {
 			return ip, nil
@@ -59,18 +59,27 @@ func GetSameAvailableIp(ip string) (string, error) {
 		if len(ipv6s) == 0 {
 			break
 		}
-		pointer := math.Round(float64(len(ipv4s)) - 1)
+		pointer := util.Rand(len(ipv6s))
 		for key, _ := range ipv4s {
 			ipv6List = append(ipv6List, key)
 		}
-		return ipv6List[int(pointer)], nil
+		return ipv6List[pointer], nil
 	default:
-		// default use ipv4 nic
-		pointer := math.Round(float64(len(ipv4s)) - 1)
-		for key, _ := range ipv4s {
-			ipv4List = append(ipv4List, key)
+		if tarIpType == "ipv4" {
+			pointer := util.Rand(len(ipv4s))
+			for key, _ := range ipv4s {
+				ipv4List = append(ipv4List, key)
+			}
+			return ipv4List[pointer], nil
 		}
-		return ipv4List[int(pointer)], nil
+
+		if tarIpType == "ipv6" {
+			pointer := util.Rand(len(ipv6s))
+			for key, _ := range ipv6s {
+				ipv6List = append(ipv6List, key)
+			}
+			return ipv6List[pointer], nil
+		}
 	}
 
 	return "", errors.New("no network adapter is available")
@@ -104,9 +113,11 @@ func GetAllNiCs() (ipv4s, ipv6s map[string]string) {
 
 			if ipNet.IP.To4() != nil {
 				ipv4nics[ipNet.IP.String()] = intf.Name
+				continue
 			}
 			if ipNet.IP.To16() != nil {
 				ipv6nics[ipNet.IP.String()] = intf.Name
+				continue
 			}
 		}
 	}
